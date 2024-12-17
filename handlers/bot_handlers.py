@@ -60,7 +60,6 @@ def get_first_name(message):
     global current_first_name
     first_name = message.text
 
-    # Проверка на длину имени
     if len(first_name) < 2 or not first_name.isalpha():
         bot.send_message(
             message.chat.id,
@@ -101,9 +100,11 @@ def get_phone_number(message):
         bot.register_next_step_handler(message, get_phone_number)
         return
 
+
     def confirm_booking(message):
         global current_phone, current_doctor, current_time, current_first_name, current_last_name
         current_phone = message.text
+
 
     current_phone = phone_number
 
