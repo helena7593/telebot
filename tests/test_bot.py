@@ -16,7 +16,7 @@ def test_doctor_time1():
 
 def test_doctor_time2():
     dentist = Dentist()
-    assert dentist.book_time("13:00") == False
+    assert dentist.book_time("17:00") == False
 
 def test_doctor_time3():
     cardiologist = Cardiologist()

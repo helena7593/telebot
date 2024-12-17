@@ -5,7 +5,7 @@ from doctors.super_class import  dentist,therapist,cardiologist
 from database.database import add_appointment
 
 current_doctor = None
-current_time = None
+current_time: None = None
 current_first_name = None
 current_last_name = None
 current_phone = None
@@ -58,23 +58,58 @@ def choose_time(message):
 
 def get_first_name(message):
     global current_first_name
-    current_first_name = message.text
+    first_name = message.text
+
+    # Проверка на длину имени
+    if len(first_name) < 2 or not first_name.isalpha():
+        bot.send_message(
+            message.chat.id,
+            "Invalid first name. Please enter a valid name (at least 2 alphabetic characters):"
+        )
+        bot.register_next_step_handler(message, get_first_name)
+        return
+
+    current_first_name = first_name
     bot.send_message(message.chat.id, "Please enter your last name:")
     bot.register_next_step_handler(message, get_last_name)
 
 def get_last_name(message):
     global current_last_name
-    current_last_name = message.text
-    bot.send_message(message.chat.id, "Please enter your phone number:")
-    bot.register_next_step_handler(message, confirm_booking)
+    last_name = message.text
 
-def confirm_booking(message):
-    global current_phone, current_doctor, current_time, current_first_name, current_last_name
-    current_phone = message.text
+    if len(last_name) < 2 or not last_name.isalpha():
+        bot.send_message(
+            message.chat.id,
+            "Invalid last name. Please enter a valid last name (at least 2 alphabetic characters):"
+        )
+        bot.register_next_step_handler(message, get_last_name)
+        return
+
+    current_last_name = last_name
+    bot.send_message(message.chat.id, "Please enter your phone number:")
+    bot.register_next_step_handler(message, get_phone_number)
+
+def get_phone_number(message):
+    global current_phone
+    phone_number = message.text
+
+    if not phone_number.isdigit() or len(phone_number) < 10 or len(phone_number) > 15:
+        bot.send_message(
+            message.chat.id,
+            "Invalid phone number. Please enter a valid phone number (10-15 digits):"
+        )
+        bot.register_next_step_handler(message, get_phone_number)
+        return
+
+    def confirm_booking(message):
+        global current_phone, current_doctor, current_time, current_first_name, current_last_name
+        current_phone = message.text
+
+    current_phone = phone_number
 
     add_appointment(
-        doctor_name=current_doctor.name,
-        time=current_time,
+        doctor_name=current_doctor.name, 
+        time=current_time, 
         first_name=current_first_name,
         last_name=current_last_name,
         phone=current_phone)
@@ -87,9 +122,3 @@ def confirm_booking(message):
         f"Patient: {current_first_name} {current_last_name}\n"
         f"Phone: {current_phone}",
     )
-    current_doctor = None
-    current_time = None
-    current_first_name = None
-    current_last_name = None
-    current_phone = None
-
