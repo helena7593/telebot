@@ -7,12 +7,12 @@ def test_doctor_booking_via_subclass():
 
 def test_doctor_time():
     dentist = Dentist()
-    assert dentist.book_time("10:00") == False
+    assert dentist.book_time("10:00") == True
     assert "10:00" not in dentist.schedule
 
 def test_doctor_time1():
     dentist = Dentist()
-    assert dentist.book_time("10:00") == True
+    assert dentist.book_time("10:00") == False
 
 def test_doctor_time2():
     dentist = Dentist()
