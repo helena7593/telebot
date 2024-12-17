@@ -1,0 +1,41 @@
+version: 2.1
+
+executors:
+  python-executor:
+    docker:
+      - image: circleci/python:3.9
+    working_directory: ~/repo
+
+jobs:
+  test:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Set PYTHONPATH
+          command: echo 'export PYTHONPATH=$PYTHONPATH:/home/circleci/project' >> $BASH_ENV
+      - run:
+          name: Create .env file
+          command: |
+            echo "API_TOKEN=${API_TOKEN}" > .env
+            echo ".env file content:"
+            cat .env
+          when: always
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            pytest tests/ --maxfail=1 --disable-warnings
+
+workflows:
+  version: 2
+  test-workflow:
+    jobs:
+      - test
